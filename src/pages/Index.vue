@@ -1,13 +1,13 @@
 <template>
   <q-page class="container">
-    <div class="orientation-portrait text-center">
-      <p class="text-h6">Por favor, vire o celular para visualizar</p>
-      <p class="text-h6">Please turn the phone over to view.</p>
-      <q-icon name="smartphone" size="10rem" class="rotate-90"/>
-    </div>
-    <div class="orientation-landscape">
-      <model-stl v-if="show" src="statics/Modelo_Inferior.stl" :backgroundColor="'black'"></model-stl>
-      <q-btn label="Show" icon="visibility" @click="show = true" class="full-width q-mt-lg" color="primary" />
+    <div>
+      <q-uploader
+      url="http://localhost:4444/upload"
+      dark
+      ref="img"
+      @added="uploadImage"
+    />
+      <model-stl v-if="show" :src="stl" :backgroundColor="'black'"></model-stl>
     </div>
   </q-page>
 </template>
@@ -21,7 +21,26 @@ export default {
   },
   data () {
     return {
-      show: false
+      show: false,
+      stl: undefined
+    }
+  },
+  methods: {
+    uploadImage () {
+      const self = this
+      var file = this.$refs.img.files[0]
+      if (file !== undefined) {
+        var reader = new FileReader()
+        reader.onload = function (e) {
+          self.stl = e.target.result
+          self.show = true
+          console.log(self.show)
+        }
+        reader.onerror = function (error) {
+          alert(error)
+        }
+        reader.readAsDataURL(file)
+      }
     }
   }
 }
