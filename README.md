@@ -1,26 +1,7 @@
 # Quasar App (quasar-3d-model)
 
-A Quasar Framework app
+An example application for rendering 3D models using lib [vue-3d-model](https://github.com/hujiulong/vue-3d-model)
 
-## Install the dependencies
-```bash
-npm install
-```
+#DEMO
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev
-```
-
-### Lint the files
-```bash
-npm run lint
-```
-
-### Build the app for production
-```bash
-quasar build
-```
-
-### Customize the configuration
-See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
+[Quasar3d](http://quasar3d.surge.sh/)
