@@ -26,7 +26,10 @@
         v-if="stl"
         :width="500"
         :src="stl"
-        :backgroundColor="hex"></model-stl>
+        :backgroundColor="hex"
+        @on-load="finishLoadModel()"
+        @on-error="errorModel()">
+      </model-stl>
     </div>
   </q-page>
 </template>
@@ -41,14 +44,27 @@ export default {
   data () {
     return {
       stl: undefined,
+      show: false,
       hex: '#000000'
     }
   },
   methods: {
     uploadImage (e) {
+      this.$q.loading.show({
+        message: 'Load Model 3D'
+      })
       const file = e.target.files[0]
-      console.log(file.name.substring(file.name.lastIndexOf('.') + 1))
       this.stl = URL.createObjectURL(file)
+      // console.log(file.name.substring(file.name.lastIndexOf('.') + 1))
+    },
+    finishLoadModel () {
+      // console.log('chamou')
+      this.$q.loading.hide()
+    },
+    errorModel () {
+      alert('Error in File.')
+      this.$q.loading.hide()
+      this.stl = undefined
     }
   }
 }
