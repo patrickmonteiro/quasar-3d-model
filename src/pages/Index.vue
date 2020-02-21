@@ -1,15 +1,32 @@
 <template>
   <q-page class="container">
     <div class="row q-col-gutter-md q-pt-sm">
-      <q-select class="col-8" outlined v-model="fileType" :options="options" dense label="Format" @input="resetType()" />
+      <q-select
+        class="col-8"
+        outlined
+        v-model="fileType"
+        :options="options"
+        dense
+        label="Format"
+        @input="resetType()" />
       <div class="col-4">
-          <q-btn
-            label="Select File"
-            color="primary"
-            icon="attach_file"
-            push
-            :disable="fileType"
-            @click="$refs.inputUpload.click()" />
+        <q-btn
+          label="File"
+          color="primary"
+          icon="attach_file"
+          push
+          :disable="!fileType"
+          @click="$refs.inputUpload.click()" />
+      </div>
+      <div class="col-4">
+        <q-btn
+          label="Rotate"
+          color="secondary"
+          icon="attach_file"
+          push
+          dense
+          :disable="!fileType"
+          @click="rotate()" />
       </div>
       <!-- <div class="col-2">
         <q-btn round color="primary" push icon="colorize" class="cursor-pointer q-ml-sm">
@@ -49,6 +66,7 @@
         :src="fileUrl"
         :backgroundAlpha="0"
         :backgroundColor="hex"
+        :rotation="rotation"
         @on-load="finishLoadModel()"
         @on-error="errorModel()">
       </model-collada>
@@ -100,7 +118,12 @@ export default {
       fileType: '',
       show: false,
       hex: '#000000',
-      options: ['stl', 'obj', 'dae', 'json', 'ply', 'gltf']
+      options: ['stl', 'obj', 'dae', 'json', 'ply', 'gltf'],
+      rotation: {
+        x: -Math.PI / 2,
+        y: 0,
+        z: 0
+      }
     }
   },
   methods: {
@@ -123,6 +146,10 @@ export default {
     },
     resetType () {
       this.fileUrl = undefined
+    },
+    rotate () {
+      this.rotation.z += 0.01
+      requestAnimationFrame(this.rotate)
     }
   }
 }
