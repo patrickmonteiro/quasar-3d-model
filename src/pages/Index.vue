@@ -1,6 +1,6 @@
 <template>
   <q-page class="container">
-    <div class="row q-col-gutter-md q-pt-sm">
+    <div class="row q-col-gutter-md q-pt-sm q-px-sm">
       <q-select
         class="col-8"
         outlined
@@ -14,27 +14,12 @@
           label="File"
           color="primary"
           icon="attach_file"
-          push
-          :disable="!fileType"
-          @click="$refs.inputUpload.click()" />
-      </div>
-      <div class="col-4">
-        <q-btn
-          label="Rotate"
-          color="secondary"
-          icon="attach_file"
+          class="full-width"
           push
           dense
           :disable="!fileType"
-          @click="rotate()" />
+          @click="$refs.inputUpload.click()" />
       </div>
-      <!-- <div class="col-2">
-        <q-btn round color="primary" push icon="colorize" class="cursor-pointer q-ml-sm">
-          <q-popup-proxy transition-show="scale" transition-hide="scale">
-          <q-color v-model="hex" />
-        </q-popup-proxy>
-      </q-btn>
-      </div> -->
       <input
         class="hidden"
         type="file"
@@ -42,12 +27,46 @@
         ref="inputUpload"
         @change="uploadImage" />
     </div>
+    <div class="row" v-if="controls">
+      <q-btn
+        v-if="!rotateStatus"
+        label="Rotate"
+        color="secondary"
+        icon="loop"
+        class="col-md-2"
+        push
+        dense
+        :disable="!fileType"
+        @click="rotateInit()" />
+      <q-btn
+        v-else
+        label="Rotate"
+        color="negative"
+        icon="stop"
+        class="col-md-2"
+        push
+        dense
+        :disable="!fileType"
+        @click="rotateStop()" />
+      <q-btn
+        label="Background"
+        color="primary"
+        push
+        dense
+        :disable="!fileType"
+        icon="colorize"
+        class="cursor-pointer q-ml-sm col-md-2">
+        <q-popup-proxy transition-show="scale" transition-hide="scale">
+          <q-color v-model="hex" />
+        </q-popup-proxy>
+      </q-btn>
+    </div>
       <model-stl
         v-if="fileType === 'stl' && fileUrl"
         :width="500"
         :src="fileUrl"
-        :backgroundAlpha="0"
         :backgroundColor="hex"
+        :rotation="rotation"
         @on-load="finishLoadModel()"
         @on-error="errorModel()">
       </model-stl>
@@ -55,8 +74,8 @@
         v-if="fileType === 'obj' && fileUrl"
         :width="500"
         :src="fileUrl"
-        :backgroundAlpha="0"
         :backgroundColor="hex"
+        :rotation="rotation"
         @on-load="finishLoadModel()"
         @on-error="errorModel()">
       </model-obj>
@@ -64,7 +83,6 @@
         v-if="fileType === 'dae' && fileUrl"
         :width="500"
         :src="fileUrl"
-        :backgroundAlpha="0"
         :backgroundColor="hex"
         :rotation="rotation"
         @on-load="finishLoadModel()"
@@ -74,8 +92,8 @@
         v-if="fileType === 'json' && fileUrl"
         :width="500"
         :src="fileUrl"
-        :backgroundAlpha="0"
         :backgroundColor="hex"
+        :rotation="rotation"
         @on-load="finishLoadModel()"
         @on-error="errorModel()">
       </model-three>
@@ -83,8 +101,8 @@
         v-if="fileType === 'ply' && fileUrl"
         :width="500"
         :src="fileUrl"
-        :backgroundAlpha="0"
         :backgroundColor="hex"
+        :rotation="rotation"
         @on-load="finishLoadModel()"
         @on-error="errorModel()">
       </model-ply>
@@ -92,8 +110,8 @@
         v-if="fileType === 'gltf' && fileUrl"
         :width="500"
         :src="fileUrl"
-        :backgroundAlpha="0"
         :backgroundColor="hex"
+        :rotation="rotation"
         @on-load="finishLoadModel()"
         @on-error="errorModel()">
       </model-gltf>
@@ -117,13 +135,15 @@ export default {
       fileUrl: undefined,
       fileType: '',
       show: false,
-      hex: '#000000',
+      hex: '#ffffff',
       options: ['stl', 'obj', 'dae', 'json', 'ply', 'gltf'],
       rotation: {
         x: -Math.PI / 2,
         y: 0,
         z: 0
-      }
+      },
+      rotateStatus: false,
+      controls: false
     }
   },
   methods: {
@@ -134,10 +154,12 @@ export default {
         })
         const file = e.target.files[0]
         this.fileUrl = URL.createObjectURL(file)
+        this.controls = false
       }
     },
     finishLoadModel () {
       this.$q.loading.hide()
+      this.controls = true
     },
     errorModel () {
       alert('Error in File.')
@@ -147,8 +169,19 @@ export default {
     resetType () {
       this.fileUrl = undefined
     },
+    rotateInit () {
+      this.rotateStatus = true
+      this.rotate()
+    },
+    rotateStop () {
+      this.rotateStatus = false
+    },
     rotate () {
       this.rotation.z += 0.01
+      if (!this.rotateStatus) {
+        cancelAnimationFrame(this.rotate)
+        return
+      }
       requestAnimationFrame(this.rotate)
     }
   }
