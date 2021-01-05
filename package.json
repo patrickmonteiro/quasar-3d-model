@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.9.12",
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "core-js": "^3.0.0",
     "quasar": "^1.15.0",
     "vue-3d-model": "^1.2.2",
